@@ -1,0 +1,27 @@
+{
+  "name": "jabbar",
+  "version": "1.0.0",
+  "description": "Find out who is interested in your code",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RichardLitt/jabbar.git"
+  },
+  "keywords": [
+    "github",
+    "marketing",
+    "emails"
+  ],
+  "author": "Richard Littauer <richard.littauer@gmail.com> (https://burntfen.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RichardLitt/jabbar/issues"
+  },
+  "homepage": "https://github.com/RichardLitt/jabbar#readme",
+  "dependencies": {
+    "meow": "^5.0.0"
+  }
+}
