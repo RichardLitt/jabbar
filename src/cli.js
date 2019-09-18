@@ -4,8 +4,8 @@
 const meow = require('meow')
 const main = require('./index')
 // TODO Do these require more work on the `main` end?
-const done = require('./graphql').done
-const cache = require('./graphql').cache
+// const done = require('./graphql').done
+// const cache = require('./graphql').cache
 
 const cli = meow(`
   Usage
