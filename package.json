@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/RichardLitt/jabbar#readme",
   "dependencies": {
+    "@octokit/graphql": "^4.2.0",
     "meow": "^5.0.0"
   }
 }
