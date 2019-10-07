@@ -28,9 +28,8 @@ const repoQuery = function (owner, repo, endCursor) {
         edges {
           node {
             name
+            login
             company
-            companyHTML
-            email
             bio
             websiteUrl
             url
@@ -40,7 +39,6 @@ const repoQuery = function (owner, repo, endCursor) {
                 node {
                   name
                   description
-                  email
                   websiteUrl
                 }
               }
@@ -94,4 +92,4 @@ async function callGraphql (owner, repo) {
   }
 }
 
-process.exports = callGraphql("orbitdb", "orbit-db")
+module.exports = callGraphql
