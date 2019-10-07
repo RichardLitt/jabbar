@@ -68,7 +68,7 @@ async function paginate3DepthEdge (query, obj, objName, path) {
     obj = await paginate3DepthEdge(query, obj, objName, path)
   }
 
-  return pagObject
+  return obj
 }
 
 const callGraphql = async function (owner, repo) {
