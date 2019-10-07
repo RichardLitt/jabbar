@@ -55,37 +55,32 @@ const repoQuery = function (owner, repo, endCursor) {
   }`
 }
 
-async function callGraphql (owner, repo) {
+// Note: This only works if the object for a 3-deep list of type { obj: field: edge }
+async function paginate3DepthEdge (query, obj, objName, path) {
   // If there are pages, recursively concatinate res to the resulting object
-  async function paginateQuery (owner, repo, pagObject, cursor) {
-    let result = await graphqlt(repoQuery(owner, repo, cursor))
-    // Logic somewhat elongated by the shape of the object.
-    // Note that this paginate function isn't easily transferable to other objects.
-    // TODO Make this function more transferable
-    // The problem is that you're paginating on a child object, and the pageInfo is in a sibling of that child.
-    // Also, the variables going in may change, as will the path to the child objects.
-    pagObject.watchers.edges = pagObject.watchers.edges.concat(result.repository.watchers.edges)
-    pagObject.watchers.pageInfo = result.repository.watchers.pageInfo
+  let result = await graphqlt(query)
+  obj[path].edges = obj[path].edges.concat(result[objName][path].edges)
+  obj[path].pageInfo = result[objName][path].pageInfo
 
-    if (pagObject.watchers.pageInfo.hasNextPage) {
-      endCursor = pagObject.watchers.pageInfo.endCursor
-      // TODO There ought to be a better throttler.
-      await timeout(1000)
-      pagObject = await paginateQuery(owner, repo, pagObject, endCursor)
-    }
-
-    return pagObject
+  if (obj[path].pageInfo.hasNextPage) {
+    endCursor = obj[path].pageInfo.endCursor
+    await timeout(1000)
+    obj = await paginate3DepthEdge(query, obj, objName, path)
   }
 
+  return pagObject
+}
 
+const callGraphql = async function (owner, repo) {
   try {
     let { repository } = await graphqlt(repoQuery(owner, repo))
     if (repository.watchers.pageInfo.hasNextPage) {
       let endCursor = repository.watchers.pageInfo.endCursor
-      repository = await paginateQuery(owner, repo, repository, endCursor)
+      repository = await paginate3DepthEdge(repoQuery(owner, repo, endCursor), repository, 'repository', 'watchers')
     }
     // TODO Print this in a nice way.
-    console.log(repository.watchers.edges)
+    // console.log(repository.watchers.edges)
+    return repository.watchers.edges
   } catch (error) {
     console.log("Request failed:", error.request); // { query, variables: {}, headers: { authorization: 'token secret123' } }
     console.log(error.message); // Field 'bioHtml' doesn't exist on type 'User'
