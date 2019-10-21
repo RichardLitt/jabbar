@@ -27,8 +27,8 @@ const repoQuery = function (owner, repo, endCursor) {
             bio
             websiteUrl
             url
-            # TODO Going to have to enable pagination for this, too.
-            organizations(first: 20) {
+            organizations(first: 100) {
+              totalCount
               edges {
                 node {
                   name
