@@ -60,8 +60,6 @@ Please provide one with the GITHUB_TOKEN environment variable.`)
   process.exit(1)
 }
 
-// TODO Should I print to the console, or to a file?
-
 let callPromises = async function () {
   if (cli.flags.o) {
     console.dir(await main.getOrgStargazers(cli.flags.o), {depth: null})
@@ -71,7 +69,6 @@ let callPromises = async function () {
       console.dir(await main.getWatchers(owner, repo), {depth: null})
     } else if (cli.flags.s) {
       console.dir(await main.getStargazers(owner, repo), {depth: null})
-      // TODO Default to both stargazers and watchers?
     } else if (cli.flags.s && cli.flags.w || !cli.flags.w && !cli.flags.s) {
       console.error(`You must specify either watchers or stargazers`)
       process.exit(1)
