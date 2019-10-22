@@ -30,7 +30,7 @@ describe('When getWatchers is called it', function () {
   })
 })
 
-describe.only('When getStargazers is called it', function () {
+describe('When getStargazers is called it', function () {
   this.timeout(5000)
   it('should resolve', () => {
     return j.getStargazers('RichardLitt', 'jabbar')
@@ -45,5 +45,17 @@ describe.only('When getStargazers is called it', function () {
     const data = await j.getStargazers('RichardLitt', 'knowledge')
     // TODO There's some issue in pagination. This should be 127, but it returrns 126
     expect(data.length).to.be.above(100)
+  })
+})
+
+describe('When orgStargazers is called it', () => {
+  it('should resolve', () => {
+    return j.getOrgStargazers('mntnr')
+  })
+
+  // TODO
+  it('should should return at least one stargazer', async () => { //
+    const data = await j.getOrgStargazers('mntnr')
+    expect(data).to.equal('RichardLitt')
   })
 })

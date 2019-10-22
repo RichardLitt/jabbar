@@ -12,6 +12,44 @@ function timeout (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+const orgStargazersQuery = function (organization, endCursor) {
+  return {
+    query: `query orgStargazers($organization: String!) {
+    	organization(login: $organization) {
+    	  repositories(first:100) {
+    	    edges {
+    	      node {
+    	        name
+              stargazers(first:100) {
+                edges {
+                  node {
+                    name
+                    company
+                    companyHTML
+                    bio
+                    websiteUrl
+                    url
+                    # By the time this query traverses to the organizations connection, it is requesting up to 1,000,000 possible nodes which exceeds the maximum limit of 500,000.
+                    # organizations(first:100) {
+                    #   edges {
+                    #     node {
+                    #       name
+                    #     }
+                    #   }
+                    # }
+                  }
+                }
+              }
+    	      }
+    	    }
+    	  }
+    	}
+    }`,
+      organization: organization,
+      endCursor: endCursor || null
+  }
+}
+
 // Get all star gazer information from a repository
 const stargazersQuery = function (owner, repo, endCursor) {
   return {
@@ -133,7 +171,20 @@ const getStargazers = async function (owner, repo) {
   return getRepoInteractorsWrapper(stargazersQuery, owner, repo, 'stargazers')
 }
 
+const getOrgStargazers = async function (organization) {
+  // TODO Instead of getting Stargazers and watchers for an entire org using GraphQL,
+  // instead get all of the repositories in that org, and then get them all individually and collate them
+  try {
+    let { repository } = await graphqlt(orgStargazersQuery(organization))
+    return repository
+  } catch (error) {
+    console.log('Request failed:', error.request)
+    console.log(error.message)
+  }
+}
+
 module.exports = {
   getStargazers,
-  getWatchers
+  getWatchers,
+  getOrgStargazers
 }
