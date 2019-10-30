@@ -12,6 +12,18 @@ function timeout (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+// Remove nodes and make the gql object easier to parse
+function clean (arr) {
+  return arr.map(x => {
+    let newObj = x.node
+    newObj.organizationsTotalCount = newObj.organizations.totalCount
+    newObj.organizations = newObj.organizations.edges.map(y => {
+      return y.node
+    })
+    return newObj
+  })
+}
+
 // Get all star gazer information from a repository
 const stargazersQuery = function (owner, repo, endCursor) {
   return {
@@ -32,6 +44,7 @@ const stargazersQuery = function (owner, repo, endCursor) {
               edges {
                 node {
                   name
+                  login
                   description
                   websiteUrl
                 }
@@ -73,6 +86,7 @@ const watchersQuery = function (owner, repo, endCursor) {
               edges {
                 node {
                   name
+                  login
                   description
                   websiteUrl
                 }
@@ -135,5 +149,6 @@ const getStargazers = async function (owner, repo) {
 
 module.exports = {
   getStargazers,
-  getWatchers
+  getWatchers,
+  clean
 }

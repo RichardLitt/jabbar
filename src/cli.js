@@ -3,6 +3,7 @@
 
 const meow = require('meow')
 const main = require('./index')
+const colors = require('colors')
 
 const cli = meow(`
   Usage
@@ -60,16 +61,28 @@ Please provide one with the GITHUB_TOKEN environment variable.`)
   process.exit(1)
 }
 
-let callPromises = async function () {
+function printNames (arr) {
+  let emptyOrgs = arr.filter(x => x.organizationsTotalCount === 0)
+  arr.filter(x => x.organizationsTotalCount !== 0).forEach(x => {
+    console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''}${(x.company) ? `. Works at ${colors.blue(x.company.trimEnd())}.` : ''}
+Public organizations:
+ ${colors.blue('-')} ${x.organizations.map(y => `${colors.magenta(y.name)} (@${y.login})`).join('\n - ')}
+`)
+  })
+  console.log(`And ${colors.green(emptyOrgs.length)} ${colors.green('other users')} with no org memberships.`)
+}
+
+// TODO No need to define var
+const callPromises = async function () {
   if (cli.flags.o) {
-    console.dir(await main.getOrgStargazers(cli.flags.o), {depth: null})
+    console.dir(await main.getOrgStargazers(cli.flags.o), { depth: null })
   } else if (cli.flags.r) {
     let [owner, repo] = cli.flags.r.split('/')
     if (cli.flags.w) {
-      console.dir(await main.getWatchers(owner, repo), {depth: null})
+      printNames(main.clean(await main.getWatchers(owner, repo), { depth: null }))
     } else if (cli.flags.s) {
-      console.dir(await main.getStargazers(owner, repo), {depth: null})
-    } else if (cli.flags.s && cli.flags.w || !cli.flags.w && !cli.flags.s) {
+      printNames(main.clean(await main.getStargazers(owner, repo), { depth: null }))
+    } else if ((cli.flags.s && cli.flags.w) || (!cli.flags.w && !cli.flags.s)) {
       console.error(`You must specify either watchers or stargazers`)
       process.exit(1)
     }
