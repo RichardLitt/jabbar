@@ -63,7 +63,7 @@ Index file is empty, but present.
 
 ### Testing
 
-Currently not implemented.
+This module uses Mocha. To run the tests, run: `npm run test`.
 
 ## Contribute
 

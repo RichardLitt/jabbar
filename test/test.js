@@ -30,7 +30,7 @@ describe('When getWatchers is called it', function () {
   })
 })
 
-describe.only('When getStargazers is called it', function () {
+describe('When getStargazers is called it', function () {
   this.timeout(5000)
   it('should resolve', () => {
     return j.getStargazers('RichardLitt', 'jabbar')
