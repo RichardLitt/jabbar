@@ -69,7 +69,9 @@ Public organizations:
  ${colors.blue('-')} ${x.organizations.map(y => `${colors.magenta(y.name)} (@${y.login})`).join('\n - ')}
 `)
   })
-  console.log(`And ${colors.green(emptyOrgs.length)} ${colors.green('other users')} with no org memberships.`)
+  if (emptyOrgs.length !== 0) {
+    console.log(`And ${colors.green(emptyOrgs.length)} ${colors.green('other users')} with no org memberships.`)
+  }
 }
 
 // TODO No need to define var
