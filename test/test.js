@@ -15,12 +15,12 @@ describe('When getWatchers is called it', function () {
 
   it('should should return at least the minimal watcher', async () => { //
     const data = await j.getWatchers('RichardLitt', 'jabbar')
-    expect(data[0].node.login).to.equal('RichardLitt')
+    expect(data[0].login).to.equal('RichardLitt')
   })
 
   it('should get at least first page of orgs for a watcher', async () => { //
     const data = await j.getWatchers('RichardLitt', 'jabbar')
-    expect(data[0].node.organizations.totalCount).to.be.above(40)
+    expect(data[0].organizationsTotalCount).to.be.above(40)
   })
 
   it('should paginate', async () => { // no done
@@ -38,7 +38,7 @@ describe('When getStargazers is called it', function () {
 
   it('should should return at least the minimal stargazer', async () => { //
     const data = await j.getStargazers('RichardLitt', 'jabbar')
-    expect(data[9].node.login).to.equal('RichardLitt')
+    expect(data[9].login).to.equal('RichardLitt')
   })
 
   it('should paginate', async () => { // no done
