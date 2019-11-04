@@ -7,26 +7,25 @@ const colors = require('colors')
 
 const cli = meow(`
   Usage
-    $ jabbar <input> [opts]
+    $ jabbar [--repo|--org] <input> [--watchers|--stargazers]
 
   Options
     -o, --org     - Search all repos within this organisation
     -r, --repo    - Repository to search. Format: RichardLitt/jabbar
     -w, --watchers    - Get watchers for a repository
     -s, --stargazers  - Get stargazers for a repository
+    -h, --help        - Show this printout
 
   Authentication
     This script looks for an auth token in the env var GITHUB_TOKEN. It needs
-    to have the read:org and the user:email scopes in order to function
-    properly. Make sure this var is set to a valid GitHub oauth token. To
-    create one see:
-    https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
+    to have the read:org scope in order to function properly. Make sure this
+    var is set to a valid GitHub OAuth token.
 
   Examples
-    $ jabbar --repo RichardLitt/jabbar
+    $ jabbar --repo RichardLitt/jabbar --watchers
 
-    # To pass an authentication token:
-    $ GITHUB_TOKEN=sdajfsl jabbar --repo RichardLitt/jabbar
+    # To pass an authentication token
+    $ GITHUB_TOKEN=sd2991s jabbar -r RichardLitt/jabbar -w
 `, {
   flags: {
     repo: {
@@ -44,6 +43,10 @@ const cli = meow(`
     stargazers: {
       type: 'boolean',
       alias: 's'
+    },
+    help: {
+      type: 'boolean',
+      alias: 'h'
     }
   }
 })

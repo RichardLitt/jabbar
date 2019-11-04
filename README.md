@@ -1,6 +1,23 @@
 # Jabbar
 
-> Find out who is interested in your GitHub Code
+> Find out who is interested in your GitHub code
+
+A tool to find out more information about the people who watch or star your GitHub repository, and the organizations they work for.
+
+**Table of Contents**
+
+- [Background](#background)
+- [Install](#install)
+- [Usage](#usage)
+  - [Authentication](#authentication)
+  - [Programmatic](#programmatic)
+  - [CLI](#cli)
+  - [Testing](#testing)
+- [API](#api)
+  - [getWatchers(owner, repo)](#getwatchersowner-repo)
+  - [getStargazers(owner, repo)](#getstargazersowner-repo)
+- [Contribute](#contribute)
+- [License](#license)
 
 ## Background
 
@@ -10,7 +27,7 @@ Successful open source projects depend on their community for funding, interest,
 
 This tool started as a simple idea: rather than manually looking through the people who star and watch repositories on GitHub, could we automatically get their affiliations?
 
-*Jabbar* comes from *al jabbar*, meaning 'the giant' the medieval Arabic word for the constellation Orion. Look to the stars, eh? Any chance relation to the Gom Jabbar is purely not coincidental. (If you can think of a better name, [open an issue](https://github.com/RichardLitt/jabbar/issues/new).)
+*Jabbar* comes from *al jabbar*, meaning 'the giant' the medieval Arabic word for the constellation [Orion](https://en.wikipedia.org/wiki/Orion_(constellation)). Look to the stars, eh? Any chance relation to the Gom Jabbar is purely not coincidental. (If you can think of a better name, [open an issue](https://github.com/RichardLitt/jabbar/issues/new).)
 
 ## Install
 
@@ -22,48 +39,68 @@ npm install jabbar
 
 ## Usage
 
-Right now, running `node src/index.js` will print an empty console statement.
+### Authentication
+
+This module looks for an auth token in the environmental variable `GITHUB_TOKEN`. It needs to have the read:org scope in order to function properly. Make sure this var is set to a valid GitHub OAuth token. To create one see [this article](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/).
+
+### Programmatic
+
+```js
+const j = require('jabbar')
+
+// The main functions return a Promise.
+async function promiseWrapper () {
+  let response = await j.getWatchers('RichardLitt', 'jabbar')
+  // This removes the .nodes from the response, which isn't totally necessary, but easier to deal with.
+  let cleanerResponse = clean(response)
+}
+
+promiseWrapper()
+```
+
+Don't forget to set the `GITHUB_TOKEN` somewhere in your env.
 
 ### CLI
 
-_Most of this was lifted from [name-your-contributors](https://github.com/mntnr/name-your-contributors)._
-
-```sh
-> node src/cli.js --help
-Index file is empty, but present.
+```
+$ jabbar --help
 
   Find out who is interested in your code
 
   Usage
-    $ jabbar <input> [opts]
+    $ jabbar [--repo|--org] <input> [--watchers|--stargazers]
 
   Options
-    -t, --token   - GitHub auth token to use
     -o, --org     - Search all repos within this organisation
-    -r, --repo    - Repository to search
-    -u, --user    - User to which repository belongs
-    -c, --config  - Operate from config file. In this mode only token, verbose, and
-                    debug flags apply.
-    --csv         - Output data in CSV format
-    --wipe-cache  - Wipe local cache before starting query.
-    -v, --verbose - Enable verbose logging
-    --debug       - Enable extremely verbose logging
-    --dry-run     - Check the cost of the query without executing it.
+    -r, --repo    - Repository to search. Format: RichardLitt/jabbar
+    -w, --watchers    - Get watchers for a repository
+    -s, --stargazers  - Get stargazers for a repository
+    -h, --help        - Show this printout
 
   Authentication
     This script looks for an auth token in the env var GITHUB_TOKEN. It needs
-    to have the read:org and the user:email scopes in order to function
-    properly. Make sure this var is set to a valid GitHub oauth token. To
-    create one see:
-    https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
+    to have the read:org scope in order to function properly. Make sure this var is set to a valid GitHub OAuth token.
 
   Examples
-    $ jabbar -r jabbar -u RichardLitt
+    $ jabbar --repo RichardLitt/jabbar --watchers
+
+    # To pass an authentication token
+    $ GITHUB_TOKEN=sd2991s jabbar -r RichardLitt/jabbar -w
 ```
 
 ### Testing
 
 This module uses Mocha. To run the tests, run: `npm run test`.
+
+## API
+
+### getWatchers(owner, repo)
+
+Get all of the watchers for a repository.
+
+### getStargazers(owner, repo)
+
+Get all of the stargazers for a repository.
 
 ## Contribute
 
