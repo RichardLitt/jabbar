@@ -1,6 +1,7 @@
 const { graphql } = require('@octokit/graphql')
 const _ = require('lodash')
 const token = process.env.GITHUB_TOKEN
+const isGitHubUserOrOrg = require('is-github-user-or-org')
 
 const graphqlt = graphql.defaults({
   headers: {
@@ -92,6 +93,26 @@ const getUser = async function (user) {
   }
 }
 
+const getOrganization = async function (org) {
+  let query = {
+    query: `query organization($login:String!) {
+      organization(login: $login) {
+        name
+        login
+        websiteUrl
+        url
+      }
+    }`,
+    login: org
+  }
+  try {
+    return await graphqlt(query)
+  } catch (error) {
+    console.log('Request failed:', error.request)
+    console.log(error.message)
+  }
+}
+
 const getForkInformation = async function (owner, repo) {
   let endCursor = null
   let query = {
@@ -129,7 +150,12 @@ const getForkInformation = async function (owner, repo) {
   let res = await getRepoInteractorsWrapper(query, 'forks')
   res = res.map(async x => {
     let newObj = x.node
-    newObj.owner = await getUser(newObj.owner.login)
+    let typeOfUser = await isGitHubUserOrOrg(newObj.owner.login)
+    if (typeOfUser === 'User') {
+      newObj.owner = await getUser(newObj.owner.login)
+    } else {
+      newObj.owner = await getOrganization(newObj.owner.login)
+    }
     return newObj
   })
   return Promise.all(res)
@@ -138,12 +164,18 @@ const getForkInformation = async function (owner, repo) {
 const getForkers = async function (owner, repo) {
   const forks = await getForkInformation(owner, repo)
   return forks.map(x => {
-    let newObj = x.owner.user
+    let newObj = (x.owner.user) ? x.owner.user : x.owner.organization
     newObj.forkedAt = x.createdAt
-    newObj.organizationsTotalCount = newObj.organizations.totalCount
-    newObj.organizations = newObj.organizations.edges.map(y => {
-      return y.node
-    })
+    if (x.owner.organization) {
+      newObj.organizationsTotalCount = 1
+      newObj.organizations = [x.owner.organization] // TODO Not elegant
+      newObj.organization = true
+    } else {
+      newObj.organizationsTotalCount = newObj.organizations.totalCount
+      newObj.organizations = newObj.organizations.edges.map(y => {
+        return y.node
+      })
+    }
     return newObj
   })
 }
@@ -253,9 +285,37 @@ const getAllUsers = async function (owner, repo) {
     if (!_.find(stargazers, ['login', x.login])) {
       stargazers.push(x)
     }
+    // TODO Forking information is lost if it does exist.
+    // Add this information to the stargazers object.
   })
 
   return stargazers
+}
+
+const mostPopularOrgs = async function (arr, ignore) {
+  let allOrgs = {}
+  arr.forEach(x => {
+    // TODO x.company.stripOut('strings@`) and add them
+    x.organizations.forEach(o => {
+      if (!o.organization) {
+        if (!allOrgs[o.login]) {
+          allOrgs[o.login] = o
+          allOrgs[o.login].users = ['@' + x.login]
+        } else {
+          allOrgs[o.login].users.push('@' + x.login)
+        }
+      }
+    })
+  })
+
+  // Sort the list and remove orgs that only have one person
+  let sortedList = _.sortBy(allOrgs, [(o) => o.users.length])
+    .filter(o => o.users.length !== 1)
+
+  if (ignore) {
+    sortedList = sortedList.filter(o => o.login !== ignore.toLowerCase())
+  }
+  return _.reverse(sortedList)
 }
 
 module.exports = {
@@ -263,5 +323,6 @@ module.exports = {
   getWatchers,
   getAllUsers,
   getForkInformation,
-  getForkers
+  getForkers,
+  mostPopularOrgs
 }

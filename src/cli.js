@@ -83,7 +83,7 @@ if (cli.flags.r.length !== 2) {
   process.exit(1)
 }
 
-async function printNames (arr) {
+async function printNames (arr, ignore) {
   // Print to a file
   if (cli.flags.output) {
     if (!cli.flags.output.endsWith('.json')) {
@@ -98,9 +98,11 @@ async function printNames (arr) {
   }
 
   // Print to the CLI
-  let emptyOrgs = arr.filter(x => x.organizationsTotalCount === 0)
   let readableDate = 'YYYY MMMM Do, h:mma'
-  arr.filter(x => x.organizationsTotalCount !== 0).forEach(x => {
+
+  let emptyOrgs = arr.filter(x => (x.organizationsTotalCount === 0 && !x.organization))
+  console.log('These users have interacted with your repository:')
+  arr.filter(x => x.organizationsTotalCount !== 0 && !x.organization).forEach(x => {
     console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''}${(x.company) ? `. Works at ${colors.blue(x.company.trimEnd())}.` : ''}`)
     if (x.starredAt) { console.log(`Starred on: ${moment(x.starredAt).format(readableDate)}`) }
     if (x.forkedAt) { console.log(`Forked on: ${moment(x.starredAt).format(readableDate)}`) }
@@ -113,7 +115,7 @@ async function printNames (arr) {
     if (companyOnly.length !== 0) {
       console.log(`And these users with only stated companies, but no public orgs:`)
       companyOnly.forEach(x => {
-        console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''}. Works at ${colors.blue(x.company.trimEnd())}.`)
+        console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''} - Works at ${colors.blue(x.company.trimEnd())}.`)
       })
       console.log(``) // Newline
     }
@@ -122,17 +124,39 @@ async function printNames (arr) {
       console.log(`And ${colors.green(emptyAll.length)} ${colors.green('other users')} with no public org memberships or stated companies.`)
     }
   }
+
+  // Filter out the companies
+  let orgType = arr.filter(x => x.organization)
+  if (orgType.length !== 0) {
+    console.log(`
+These organizations forked your repository:`)
+    orgType.forEach(x => {
+      console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''}`)
+      if (x.starredAt) { console.log(`Starred on: ${moment(x.starredAt).format(readableDate)}`) }
+      if (x.forkedAt) { console.log(`Forked on: ${moment(x.starredAt).format(readableDate)}`) }
+    })
+  }
+
+  let mostPopularOrgs = await main.mostPopularOrgs(arr, ignore)
+  if (main.mostPopularOrgs.length !== 0) {
+    console.log(`
+These organizations had ${colors.green('more than one')} person in them:`)
+    mostPopularOrgs.forEach(x => {
+      console.log(`${colors.blue('- @' + x.login)}: ${colors.magenta(x.users.sort().join(', '))}.`)
+    })
+  }
 }
 
 (async () => {
   let [owner, repo] = cli.flags.r
+
   if (cli.flags.w) {
-    printNames(await main.getWatchers(owner, repo))
+    printNames(await main.getWatchers(owner, repo), owner)
   } else if (cli.flags.f) {
-    printNames(await main.getForkers(owner, repo))
+    printNames(await main.getForkers(owner, repo), owner)
   } else if (cli.flags.s) {
-    printNames(await main.getStargazers(owner, repo))
+    printNames(await main.getStargazers(owner, repo), owner)
   } else {
-    printNames(await main.getAllUsers(owner, repo))
+    printNames(await main.getAllUsers(owner, repo), owner)
   }
 })()
