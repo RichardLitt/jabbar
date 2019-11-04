@@ -1,5 +1,7 @@
 # Jabbar
 
+[![Build Status](https://travis-ci.org/RichardLitt/jabbar.svg?branch=master)](https://travis-ci.org/RichardLitt/jabbar)
+
 > Find out who is interested in your GitHub code
 
 A tool to find out more information about the people who watch or star your GitHub repository, and the organizations they work for.
