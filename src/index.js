@@ -156,6 +156,7 @@ const getForkInformation = async function (owner, repo) {
     } else {
       newObj.owner = await getOrganization(newObj.owner.login)
     }
+    await timeout(1000) // Let's be nice.
     return newObj
   })
   return Promise.all(res)
