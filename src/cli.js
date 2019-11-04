@@ -5,6 +5,7 @@ const meow = require('meow')
 const main = require('./index')
 const colors = require('colors')
 const fs = require('fs')
+const moment = require('moment')
 
 const cli = meow(`
   Usage
@@ -93,8 +94,9 @@ async function printNames (arr) {
   // Print to the CLI
   let emptyOrgs = arr.filter(x => x.organizationsTotalCount === 0)
   arr.filter(x => x.organizationsTotalCount !== 0).forEach(x => {
-    console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''}${(x.company) ? `. Works at ${colors.blue(x.company.trimEnd())}.` : ''}
-Public organizations:
+    console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''}${(x.company) ? `. Works at ${colors.blue(x.company.trimEnd())}.` : ''}`)
+    if (x.starredAt) { console.log(`Starred on: ${moment(x.starredAt).format('YYYY MMMM Do, h:mma')}`) }
+    console.log(`Public organizations:
  ${colors.blue('-')} ${x.organizations.map(y => `${colors.magenta(y.name)} (@${y.login})`).join('\n - ')}
 `)
   })

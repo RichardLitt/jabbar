@@ -16,6 +16,9 @@ function timeout (ms) {
 function clean (arr) {
   return arr.map(x => {
     let newObj = x.node
+    if (x.starredAt) {
+      newObj.starredAt = x.starredAt
+    }
     newObj.organizationsTotalCount = newObj.organizations.totalCount
     newObj.organizations = newObj.organizations.edges.map(y => {
       return y.node
@@ -32,6 +35,7 @@ const stargazersQuery = function (owner, repo, endCursor) {
       stargazers(first: 100, after: $endCursor) {
         totalCount
         edges {
+          starredAt
           node {
             name
             login
