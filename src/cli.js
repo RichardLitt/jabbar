@@ -82,7 +82,7 @@ async function printNames (arr) {
     if (!cli.flags.output.endsWith('.json')) {
       cli.flags.output = cli.flags.output + '.json'
     }
-    await fs.writeFileSync(cli.flags.output, JSON.stringify(arr), 'utf8', (err) => {
+    await fs.writeFileSync(cli.flags.output, JSON.stringify(arr, null, 2), 'utf8', (err) => {
       if (err) throw err; console.log('There was an error saving the file.')
       process.exit(1)
     })
