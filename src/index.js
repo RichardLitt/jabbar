@@ -285,9 +285,9 @@ const getAllUsers = async function (owner, repo) {
   forkers.forEach(x => {
     if (!_.find(stargazers, ['login', x.login])) {
       stargazers.push(x)
+    } else {
+      stargazers[_.findIndex(stargazers, ['login', x.login])].forkedAt = x.forkedAt
     }
-    // TODO Forking information is lost if it does exist.
-    // Add this information to the stargazers object.
   })
 
   return stargazers
