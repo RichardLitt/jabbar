@@ -77,8 +77,7 @@ Public organizations:
   }
 }
 
-// TODO No need to define var
-const callPromises = async function () {
+(async () => {
   if (cli.flags.o) {
     console.dir(await main.getOrgStargazers(cli.flags.o), { depth: null })
   } else if (cli.flags.r) {
@@ -92,6 +91,4 @@ const callPromises = async function () {
       process.exit(1)
     }
   }
-}
-
-callPromises()
+})()
