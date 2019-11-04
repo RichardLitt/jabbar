@@ -1,4 +1,5 @@
 const { graphql } = require('@octokit/graphql')
+const _ = require('lodash')
 const token = process.env.GITHUB_TOKEN
 
 const graphqlt = graphql.defaults({
@@ -151,7 +152,23 @@ const getStargazers = async function (owner, repo) {
   return clean(await getRepoInteractorsWrapper(stargazersQuery, owner, repo, 'stargazers'))
 }
 
+const getAllUsers = async function (owner, repo) {
+  let watchers = await getWatchers(owner, repo)
+  let stargazers = await getStargazers(owner, repo)
+  // TODO Add in allContributors or name-your-contributors output
+
+  // Stargazers has more information due to the starredAt field
+  watchers.forEach(x => {
+    if (!_.find(stargazers, ['login', x.login])) {
+      stargazers += x
+    }
+  })
+
+  return stargazers
+}
+
 module.exports = {
   getStargazers,
-  getWatchers
+  getWatchers,
+  getAllUsers
 }

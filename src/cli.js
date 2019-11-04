@@ -111,8 +111,7 @@ async function printNames (arr) {
     printNames(await main.getWatchers(owner, repo))
   } else if (cli.flags.s) {
     printNames(await main.getStargazers(owner, repo))
-  } else if ((cli.flags.s && cli.flags.w) || (!cli.flags.w && !cli.flags.s)) {
-    console.error(`You must specify either watchers or stargazers`)
-    process.exit(1)
+  } else {
+    printNames(await main.getAllUsers(owner, repo))
   }
 })()
