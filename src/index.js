@@ -140,15 +140,14 @@ const getRepoInteractorsWrapper = async function (q, owner, repo, interactors) {
 }
 
 const getWatchers = async function (owner, repo) {
-  return getRepoInteractorsWrapper(watchersQuery, owner, repo, 'watchers')
+  return clean(await getRepoInteractorsWrapper(watchersQuery, owner, repo, 'watchers'))
 }
 
 const getStargazers = async function (owner, repo) {
-  return getRepoInteractorsWrapper(stargazersQuery, owner, repo, 'stargazers')
+  return clean(await getRepoInteractorsWrapper(stargazersQuery, owner, repo, 'stargazers'))
 }
 
 module.exports = {
   getStargazers,
-  getWatchers,
-  clean
+  getWatchers
 }

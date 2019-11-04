@@ -48,14 +48,10 @@ This module looks for an auth token in the environmental variable `GITHUB_TOKEN`
 ```js
 const j = require('jabbar')
 
-// The main functions return a Promise.
-async function promiseWrapper () {
+// The main functions return a Promise, so wrap it in an async function
+(async () => {
   let response = await j.getWatchers('RichardLitt', 'jabbar')
-  // This removes the .nodes from the response, which isn't totally necessary, but easier to deal with.
-  let cleanerResponse = clean(response)
-}
-
-promiseWrapper()
+})()
 ```
 
 Don't forget to set the `GITHUB_TOKEN` somewhere in your env.

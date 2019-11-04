@@ -77,9 +77,6 @@ if (cli.flags.r.length !== 2) {
 }
 
 async function printNames (arr) {
-  // Basic shimming
-  arr = main.clean(arr)
-
   // Print to a file
   if (cli.flags.output) {
     if (!cli.flags.output.endsWith('.json')) {
