@@ -1,5 +1,5 @@
 const { graphql } = require('@octokit/graphql')
-const token = process.env.JABBAR_TOKEN
+const token = process.env.GITHUB_TOKEN
 
 const graphqlt = graphql.defaults({
   headers: {
