@@ -168,8 +168,6 @@ const getForkers = async function (owner, repo) {
     let newObj = (x.owner.user) ? x.owner.user : x.owner.organization
     newObj.forkedAt = x.createdAt
     if (x.owner.organization) {
-      newObj.organizationsTotalCount = 1
-      newObj.organizations = [x.owner.organization] // TODO Not elegant
       newObj.organization = true
     } else {
       newObj.organizationsTotalCount = newObj.organizations.totalCount
@@ -295,7 +293,9 @@ const getAllUsers = async function (owner, repo) {
 
 const mostPopularOrgs = async function (arr, ignore) {
   let allOrgs = {}
-  arr.forEach(x => {
+  arr
+    .filter(x => x.organizations)
+    .forEach(x => {
     // TODO x.company.stripOut('strings@`) and add them
     x.organizations.forEach(o => {
       if (!o.organization) {
