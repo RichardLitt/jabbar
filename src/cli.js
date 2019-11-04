@@ -109,7 +109,18 @@ async function printNames (arr) {
 `)
   })
   if (emptyOrgs.length !== 0) {
-    console.log(`And ${colors.green(emptyOrgs.length)} ${colors.green('other users')} with no org memberships.`)
+    let companyOnly = emptyOrgs.filter(x => x.company)
+    if (companyOnly.length !== 0) {
+      console.log(`And these users with only stated companies, but no public orgs:`)
+      companyOnly.forEach(x => {
+        console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''}. Works at ${colors.blue(x.company.trimEnd())}.`)
+      })
+      console.log(``) // Newline
+    }
+    let emptyAll = emptyOrgs.filter(x => !x.company)
+    if (emptyAll.length !== 0) {
+      console.log(`And ${colors.green(emptyAll.length)} ${colors.green('other users')} with no public org memberships or stated companies.`)
+    }
   }
 }
 
