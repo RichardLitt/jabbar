@@ -73,6 +73,8 @@ $ jabbar --help
     -w, --watchers    - Get watchers for a repository
     -s, --stargazers  - Get stargazers for a repository
     -f, --forkers     - Get forkers for a repository
+    --ignored     - Ignore a user. Defaults to include owner of repository.
+                    Use csv for multiple users.
     -h, --help        - Show this printout
     --output <file>   - Print the results to a file as JSON
 

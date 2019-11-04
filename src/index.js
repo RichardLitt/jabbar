@@ -291,30 +291,31 @@ const getAllUsers = async function (owner, repo) {
   return stargazers
 }
 
-const mostPopularOrgs = async function (arr, ignore) {
+const mostPopularOrgs = async function (arr, opts) {
   let allOrgs = {}
   arr
     .filter(x => x.organizations)
+    .filter(x => opts.ignore.indexOf(x.login.toLowerCase()) === -1)
     .forEach(x => {
     // TODO x.company.stripOut('strings@`) and add them
-    x.organizations.forEach(o => {
-      if (!o.organization) {
-        if (!allOrgs[o.login]) {
-          allOrgs[o.login] = o
-          allOrgs[o.login].users = ['@' + x.login]
-        } else {
-          allOrgs[o.login].users.push('@' + x.login)
+      x.organizations.forEach(o => {
+        if (!o.organization) {
+          if (!allOrgs[o.login]) {
+            allOrgs[o.login] = o
+            allOrgs[o.login].users = ['@' + x.login]
+          } else {
+            allOrgs[o.login].users.push('@' + x.login)
+          }
         }
-      }
+      })
     })
-  })
 
   // Sort the list and remove orgs that only have one person
   let sortedList = _.sortBy(allOrgs, [(o) => o.users.length])
     .filter(o => o.users.length !== 1)
 
-  if (ignore) {
-    sortedList = sortedList.filter(o => o.login !== ignore.toLowerCase())
+  if (opts) {
+    sortedList = sortedList.filter(o => opts.ignore.indexOf(o.login.toLowerCase()) === -1)
   }
   return _.reverse(sortedList)
 }
