@@ -69,8 +69,10 @@ $ jabbar --help
   Options
     -r, --repo    - Repository to search. Format: RichardLitt/jabbar
                     This flag is used as the default input.
+    --all         - The default: get all watchers, stargazers, and forkers
     -w, --watchers    - Get watchers for a repository
     -s, --stargazers  - Get stargazers for a repository
+    -f, --forkers     - Get forkers for a repository
     -h, --help        - Show this printout
     --output <file>   - Print the results to a file as JSON
 
@@ -80,7 +82,7 @@ $ jabbar --help
     var is set to a valid GitHub OAuth token.
 
   Examples
-    $ jabbar RichardLitt/jabbar --watchers
+    $ jabbar RichardLitt/jabbar
     $ jabbar --repo RichardLitt/jabbar --watchers
     $ jabbar RichardLitt/jabbar -w --output=results.json
 
@@ -94,6 +96,10 @@ This module uses Mocha. To run the tests, run: `npm run test`.
 
 ## API
 
+### getAllUsers(owner, repo)
+
+Get the aggregate users who have watched, forked, or stargazed at your repo.
+
 ### getWatchers(owner, repo)
 
 Get all of the watchers for a repository.
@@ -101,6 +107,14 @@ Get all of the watchers for a repository.
 ### getStargazers(owner, repo)
 
 Get all of the stargazers for a repository.
+
+### getForkers(owner, repo)
+
+Get all users who have forked the repository.
+
+### getForkInformation(owner, repo)
+
+Get information about the repository's forks.
 
 ## Contribute
 

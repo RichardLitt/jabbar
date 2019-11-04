@@ -14,8 +14,10 @@ const cli = meow(`
   Options
     -r, --repo    - Repository to search. Format: RichardLitt/jabbar
                     This flag is used as the default input.
+    --all         - The default: get all watchers, stargazers, and forkers
     -w, --watchers    - Get watchers for a repository
     -s, --stargazers  - Get stargazers for a repository
+    -f, --forkers     - Get forkers for a repository
     -h, --help        - Show this printout
     --output <file>   - Print the results to a file as JSON
 
@@ -25,7 +27,7 @@ const cli = meow(`
     var is set to a valid GitHub OAuth token.
 
   Examples
-    $ jabbar RichardLitt/jabbar --watchers
+    $ jabbar RichardLitt/jabbar
     $ jabbar --repo RichardLitt/jabbar --watchers
     $ jabbar RichardLitt/jabbar -w --output=results.json
 
@@ -44,6 +46,10 @@ const cli = meow(`
     stargazers: {
       type: 'boolean',
       alias: 's'
+    },
+    forkers: {
+      type: 'boolean',
+      alias: 'f'
     },
     help: {
       type: 'boolean',
@@ -93,9 +99,11 @@ async function printNames (arr) {
 
   // Print to the CLI
   let emptyOrgs = arr.filter(x => x.organizationsTotalCount === 0)
+  let readableDate = 'YYYY MMMM Do, h:mma'
   arr.filter(x => x.organizationsTotalCount !== 0).forEach(x => {
     console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''}${(x.company) ? `. Works at ${colors.blue(x.company.trimEnd())}.` : ''}`)
-    if (x.starredAt) { console.log(`Starred on: ${moment(x.starredAt).format('YYYY MMMM Do, h:mma')}`) }
+    if (x.starredAt) { console.log(`Starred on: ${moment(x.starredAt).format(readableDate)}`) }
+    if (x.forkedAt) { console.log(`Forked on: ${moment(x.starredAt).format(readableDate)}`) }
     console.log(`Public organizations:
  ${colors.blue('-')} ${x.organizations.map(y => `${colors.magenta(y.name)} (@${y.login})`).join('\n - ')}
 `)
@@ -109,6 +117,8 @@ async function printNames (arr) {
   let [owner, repo] = cli.flags.r
   if (cli.flags.w) {
     printNames(await main.getWatchers(owner, repo))
+  } else if (cli.flags.f) {
+    printNames(await main.getForkers(owner, repo))
   } else if (cli.flags.s) {
     printNames(await main.getStargazers(owner, repo))
   } else {

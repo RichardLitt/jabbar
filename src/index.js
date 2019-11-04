@@ -59,6 +59,95 @@ const getRepoInteractorsWrapper = async function (query, interactors) {
   }
 }
 
+const getUser = async function (user) {
+  let query = {
+    query: `query user($login:String!) {
+      user(login: $login) {
+        name
+        login
+        company
+        bio
+        websiteUrl
+        url
+        organizations(first: 100) {
+          totalCount
+          edges {
+            node {
+              name
+              login
+              description
+              websiteUrl
+            }
+          }
+        }
+      }
+    }`,
+    login: user
+  }
+  try {
+    return await graphqlt(query)
+  } catch (error) {
+    console.log('Request failed:', error.request)
+    console.log(error.message)
+  }
+}
+
+const getForkInformation = async function (owner, repo) {
+  let endCursor = null
+  let query = {
+    query: `query forks($owner: String!, $repo: String!, $endCursor: String) {
+    repository(name: $repo, owner: $owner) {
+      forks(first: 100, after: $endCursor) {
+        totalCount
+        edges {
+          node {
+            createdAt
+            forkCount
+            stargazers {
+              totalCount
+            }
+            watchers {
+              totalCount
+            }
+            owner {
+              login
+            }
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+          startCursor
+        }
+      }
+    }
+  }`,
+    repo: repo,
+    owner: owner,
+    endCursor: endCursor || null
+  }
+  let res = await getRepoInteractorsWrapper(query, 'forks')
+  res = res.map(async x => {
+    let newObj = x.node
+    newObj.owner = await getUser(newObj.owner.login)
+    return newObj
+  })
+  return Promise.all(res)
+}
+
+const getForkers = async function (owner, repo) {
+  const forks = await getForkInformation(owner, repo)
+  return forks.map(x => {
+    let newObj = x.owner.user
+    newObj.forkedAt = x.createdAt
+    newObj.organizationsTotalCount = newObj.organizations.totalCount
+    newObj.organizations = newObj.organizations.edges.map(y => {
+      return y.node
+    })
+    return newObj
+  })
+}
+
 const getWatchers = async function (owner, repo) {
   let endCursor = null
   let query = {
@@ -149,12 +238,20 @@ const getStargazers = async function (owner, repo) {
 const getAllUsers = async function (owner, repo) {
   let watchers = await getWatchers(owner, repo)
   let stargazers = await getStargazers(owner, repo)
+  let forkers = await getForkers(owner, repo)
   // TODO Add in allContributors or name-your-contributors output
 
   // Stargazers has more information due to the starredAt field
   watchers.forEach(x => {
     if (!_.find(stargazers, ['login', x.login])) {
-      stargazers += x
+      stargazers.push(x)
+    }
+  })
+
+  // Much less likely to have forked without starring or watching
+  forkers.forEach(x => {
+    if (!_.find(stargazers, ['login', x.login])) {
+      stargazers.push(x)
     }
   })
 
@@ -164,5 +261,7 @@ const getAllUsers = async function (owner, repo) {
 module.exports = {
   getStargazers,
   getWatchers,
-  getAllUsers
+  getAllUsers,
+  getForkInformation,
+  getForkers
 }

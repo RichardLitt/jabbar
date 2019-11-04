@@ -47,3 +47,29 @@ describe('When getStargazers is called it', function () {
     expect(data.length).to.be.above(100)
   })
 })
+
+describe('When getForkers is called it', function () {
+  this.timeout(5000)
+  it('should resolve', () => {
+    return j.getForkers('RichardLitt', 'jabbar')
+  })
+
+  it('should should return at least the minimal stargazer', async () => { //
+    const data = await j.getForkers('RichardLitt', 'jabbar')
+    expect(data[0].login).to.equal('robertpeacock22')
+  })
+})
+
+describe('When getForkInformation is called it', function () {
+  this.timeout(5000)
+  it('should resolve', () => {
+    return j.getForkInformation('RichardLitt', 'jabbar')
+  })
+})
+
+describe('When getAllUsers is called it', function () {
+  this.timeout(5000)
+  it('should resolve', () => {
+    return j.getAllUsers('RichardLitt', 'jabbar')
+  })
+})
