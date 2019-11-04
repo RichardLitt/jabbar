@@ -25,7 +25,7 @@ describe('When getWatchers is called it', function () {
 
   it('should paginate', async () => { // no done
     const data = await j.getWatchers('orbitdb', 'orbit-db')
-    // TODO There's some issue in pagination. This should be 127, but it returrns 126
+    // TODO There's some issue in pagination. This should be 127, but it returns 126
     expect(data.length).to.be.above(100)
   })
 })
@@ -43,7 +43,7 @@ describe('When getStargazers is called it', function () {
 
   it('should paginate', async () => { // no done
     const data = await j.getStargazers('RichardLitt', 'knowledge')
-    // TODO There's some issue in pagination. This should be 127, but it returrns 126
+    // TODO There's some issue in pagination. This should be 127, but it returns 126
     expect(data.length).to.be.above(100)
   })
 })

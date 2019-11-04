@@ -8,11 +8,11 @@ const fs = require('fs')
 
 const cli = meow(`
   Usage
-    $ jabbar [--repo|--org] <input> [--watchers|--stargazers]
+    $ jabbar <input> [--watchers|--stargazers]
 
   Options
-    -o, --org     - Search all repos within this organisation
     -r, --repo    - Repository to search. Format: RichardLitt/jabbar
+                    This flag is used as the default input.
     -w, --watchers    - Get watchers for a repository
     -s, --stargazers  - Get stargazers for a repository
     -h, --help        - Show this printout
@@ -24,7 +24,9 @@ const cli = meow(`
     var is set to a valid GitHub OAuth token.
 
   Examples
+    $ jabbar RichardLitt/jabbar --watchers
     $ jabbar --repo RichardLitt/jabbar --watchers
+    $ jabbar RichardLitt/jabbar -w --output=results.json
 
     # To pass an authentication token
     $ GITHUB_TOKEN=sd2991s jabbar -r RichardLitt/jabbar -w
@@ -33,10 +35,6 @@ const cli = meow(`
     repo: {
       type: 'string',
       alias: 'r'
-    },
-    org: {
-      type: 'string',
-      alias: 'o'
     },
     watchers: {
       type: 'boolean',
@@ -57,15 +55,24 @@ const cli = meow(`
 })
 
 const token = process.env.GITHUB_TOKEN
-
-if (cli.flags.r.split('/').length !== 2) {
-  console.error(`The --repo flag requires the format: 'owner/repo'.`)
-  process.exit(1)
-}
-
 if (!token) {
   console.error(`A token is needed to access the GitHub API.
 Please provide one with the GITHUB_TOKEN environment variable.`)
+  process.exit(1)
+}
+
+// Validate repository name inputs
+// Specify that the default flag is the repo flag
+if (cli.input[0] && !cli.flags.r) {
+  cli.flags.r = cli.input[0]
+} else if (cli.input.length === 0 && !cli.flags.r) {
+  console.error(`You must specify a repository to query.`)
+  process.exit(1)
+}
+// Note: this doesn't validate for more arcane errors, like Ric.ardLitt/10*sk.
+cli.flags.r = cli.flags.r.split('/')
+if (cli.flags.r.length !== 2) {
+  console.error(`The repository must be specified in the format: 'owner/repo'.`)
   process.exit(1)
 }
 
@@ -100,17 +107,13 @@ Public organizations:
 }
 
 (async () => {
-  if (cli.flags.o) {
-    console.dir(await main.getOrgStargazers(cli.flags.o), { depth: null })
-  } else if (cli.flags.r) {
-    let [owner, repo] = cli.flags.r.split('/')
-    if (cli.flags.w) {
-      printNames(await main.getWatchers(owner, repo))
-    } else if (cli.flags.s) {
-      printNames(await main.getStargazers(owner, repo))
-    } else if ((cli.flags.s && cli.flags.w) || (!cli.flags.w && !cli.flags.s)) {
-      console.error(`You must specify either watchers or stargazers`)
-      process.exit(1)
-    }
+  let [owner, repo] = cli.flags.r
+  if (cli.flags.w) {
+    printNames(await main.getWatchers(owner, repo))
+  } else if (cli.flags.s) {
+    printNames(await main.getStargazers(owner, repo))
+  } else if ((cli.flags.s && cli.flags.w) || (!cli.flags.w && !cli.flags.s)) {
+    console.error(`You must specify either watchers or stargazers`)
+    process.exit(1)
   }
 })()

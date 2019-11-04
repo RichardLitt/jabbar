@@ -65,24 +65,26 @@ Don't forget to set the `GITHUB_TOKEN` somewhere in your env.
 ```
 $ jabbar --help
 
-  Find out who is interested in your code
-
   Usage
-    $ jabbar [--repo|--org] <input> [--watchers|--stargazers]
+    $ jabbar <input> [--watchers|--stargazers]
 
   Options
-    -o, --org     - Search all repos within this organisation
     -r, --repo    - Repository to search. Format: RichardLitt/jabbar
+                    This flag is used as the default input.
     -w, --watchers    - Get watchers for a repository
     -s, --stargazers  - Get stargazers for a repository
     -h, --help        - Show this printout
+    --output <file>   - Print the results to a file as JSON
 
   Authentication
     This script looks for an auth token in the env var GITHUB_TOKEN. It needs
-    to have the read:org scope in order to function properly. Make sure this var is set to a valid GitHub OAuth token.
+    to have the read:org scope in order to function properly. Make sure this
+    var is set to a valid GitHub OAuth token.
 
   Examples
+    $ jabbar RichardLitt/jabbar --watchers
     $ jabbar --repo RichardLitt/jabbar --watchers
+    $ jabbar RichardLitt/jabbar -w --output=results.json
 
     # To pass an authentication token
     $ GITHUB_TOKEN=sd2991s jabbar -r RichardLitt/jabbar -w
