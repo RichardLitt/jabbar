@@ -6,6 +6,7 @@
   "scripts": {
     "test": "mocha"
   },
+  "bin": "src/cli.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/RichardLitt/jabbar.git"
