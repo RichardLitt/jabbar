@@ -152,12 +152,13 @@ const getForkInformation = async function (owner, repo) {
   res = res.map(async x => {
     let newObj = x.node
     let typeOfUser = await isGitHubUserOrOrg(newObj.owner.login)
+    await timeout(1000) // Let's be nice.
     if (typeOfUser === 'User') {
       newObj.owner = await getUser(newObj.owner.login)
     } else {
       newObj.owner = await getOrganization(newObj.owner.login)
     }
-    await timeout(1000) // Let's be nice.
+    await timeout(1000) // Let's be really nice.
     return newObj
   })
   return Promise.all(res)
@@ -272,22 +273,13 @@ const getStargazers = async function (owner, repo) {
 const getAllUsers = async function (owner, repo) {
   let watchers = await getWatchers(owner, repo)
   let stargazers = await getStargazers(owner, repo)
-  let forkers = await getForkers(owner, repo)
   // TODO Add in allContributors or name-your-contributors output
+  // TODO Figure out how to add getForkers back in. Kept hitting abuse limits.
 
   // Stargazers has more information due to the starredAt field
   watchers.forEach(x => {
     if (!_.find(stargazers, ['login', x.login])) {
       stargazers.push(x)
-    }
-  })
-
-  // Much less likely to have forked without starring or watching
-  forkers.forEach(x => {
-    if (!_.find(stargazers, ['login', x.login])) {
-      stargazers.push(x)
-    } else {
-      stargazers[_.findIndex(stargazers, ['login', x.login])].forkedAt = x.forkedAt
     }
   })
 
