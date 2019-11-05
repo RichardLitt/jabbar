@@ -116,11 +116,12 @@ async function printNames (arr, opts) {
     .filter(x => x.organizationsTotalCount !== 0 && !x.organization)
     .filter(x => opts.ignore.indexOf(x.login.toLowerCase()) === -1)
     .forEach(x => {
-      console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''}${(x.company) ? `. Works at ${colors.blue(x.company.trimEnd())}.` : ''}`)
+      console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''}${(x.company) ? `. Works at ${colors.blue(x.company.trimEnd())}.` : ''}
+${x.url}`)
       if (x.starredAt) { console.log(`Starred on: ${moment(x.starredAt).format(readableDate)}`) }
       if (x.forkedAt) { console.log(`Forked on: ${moment(x.starredAt).format(readableDate)}`) }
       console.log(`Public organizations:
- ${colors.blue('-')} ${x.organizations.map(y => `${colors.magenta(y.name)} (@${y.login})`).join('\n - ')}
+ ${colors.blue('-')} ${x.organizations.map(y => `${colors.magenta(y.name)} (@${y.login}) ${y.url}`).join('\n - ')}
 `)
     })
   if (emptyOrgs.length !== 0) {
@@ -128,7 +129,7 @@ async function printNames (arr, opts) {
     if (companyOnly.length !== 0) {
       console.log(`And these users with only stated companies, but no public orgs:`)
       companyOnly.forEach(x => {
-        console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''} - Works at ${colors.blue(x.company.trimEnd())}.`)
+        console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''} - Works at ${colors.blue(x.company.trimEnd())}. ${x.url}`)
       })
       console.log(``) // Newline
     }
@@ -144,7 +145,7 @@ async function printNames (arr, opts) {
     console.log(`
 These organizations forked your repository:`)
     orgType.forEach(x => {
-      console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''}`)
+      console.log(`${colors.green('@' + x.login)}${(x.name) ? ` (${x.name})` : ''}. ${x.url}`)
       if (x.starredAt) { console.log(`Starred on: ${moment(x.starredAt).format(readableDate)}`) }
       if (x.forkedAt) { console.log(`Forked on: ${moment(x.starredAt).format(readableDate)}`) }
     })
@@ -155,7 +156,7 @@ These organizations forked your repository:`)
     console.log(`
 These organizations had ${colors.green('more than one')} person in them:`)
     mostPopularOrgs.forEach(x => {
-      console.log(`${colors.blue('- @' + x.login)}: ${colors.magenta(x.users.sort().join(', '))}.`)
+      console.log(`${colors.blue('- **@' + x.login)}** (${x.url}): ${colors.magenta(x.users.sort().join(', '))}.`)
     })
   }
 

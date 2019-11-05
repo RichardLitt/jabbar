@@ -76,6 +76,7 @@ const getUser = async function (user) {
             node {
               name
               login
+              url
               description
               websiteUrl
             }
@@ -200,6 +201,7 @@ const getWatchers = async function (owner, repo) {
                 node {
                   name
                   login
+                  url
                   description
                   websiteUrl
                 }
@@ -244,6 +246,7 @@ const getStargazers = async function (owner, repo) {
                 node {
                   name
                   login
+                  url
                   description
                   websiteUrl
                 }
