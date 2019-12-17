@@ -43,13 +43,13 @@ npm install jabbar
 
 ### Quickstart
 
-1. Get a [GitHub Token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/).
-2. `npm i jabbar`
+1. Get a [GitHub Token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/). Click on 'read:org' in the Scopes page.
+2. `npm install --global jabbar`
 3. `GITHUB_TOKEN=asdsafs jabbar RichardLitt/jabbar`
 
 ### Authentication
 
-This module looks for an auth token in the environmental variable `GITHUB_TOKEN`. It needs to have the read:org scope in order to function properly. Make sure this var is set to a valid GitHub OAuth token. To create one see [this article](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/).
+This module looks for an auth token in the environmental variable `GITHUB_TOKEN`. It needs to have the `read:org` scope in order to function properly. Make sure this var is set to a valid GitHub OAuth token. To create one see [this article](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/).
 
 ### CLI
 
