@@ -2,9 +2,9 @@
 
 [![Build Status](https://travis-ci.org/RichardLitt/jabbar.svg?branch=master)](https://travis-ci.org/RichardLitt/jabbar)
 
-> Find out who is interested in your GitHub code
+Find out who is interested in your GitHub code!
 
-A tool to find out more information about the people who watch or star your GitHub repository, and the organizations they work for.
+This is a tool to find out some more information about the people who watch or star your GitHub repository. GitHub's native UI is good for this, but it doesn't present the information in aggregate or show which orgs people are a member of. This tool does.
 
 **Table of Contents**
 
@@ -29,6 +29,8 @@ Successful open source projects depend on their community for funding, interest,
 
 This tool started as a simple idea: rather than manually looking through the people who star and watch repositories on GitHub, could we automatically get their affiliations?
 
+### What's with the weird name?
+
 *Jabbar* comes from *al jabbar*, meaning 'the giant' the medieval Arabic word for the constellation [Orion](https://en.wikipedia.org/wiki/Orion_(constellation)). Look to the stars, eh? Any chance relation to the Gom Jabbar is purely not coincidental. (If you can think of a better name, [open an issue](https://github.com/RichardLitt/jabbar/issues/new).)
 
 ## Install
@@ -36,7 +38,7 @@ This tool started as a simple idea: rather than manually looking through the peo
 This package is on npm:
 
 ```sh
-npm install jabbar
+npm install --global jabbar
 ```
 
 ## Usage
@@ -86,6 +88,8 @@ $ jabbar --help
 ```
 
 ### Programmatic
+
+You can also install Jabbar locally.
 
 ```js
 const j = require('jabbar')
